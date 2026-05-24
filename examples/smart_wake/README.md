@@ -16,6 +16,14 @@ Design goals:
   - Example automation and script behavior for staged wake ramp logic.
   - Uses only helper-driven configuration.
 
+## Current Framing
+
+This folder is currently best treated as an advanced example package pattern.
+
+- It is not an integration runtime feature.
+- It is not yet a formal Home Assistant blueprint.
+- It can serve as a blueprint candidate later, after broader validation and UX simplification.
+
 ## Install and Use (Example Workflow)
 
 These are example artifacts, not auto-loaded by Home Assistant from this repository path.
@@ -60,11 +68,18 @@ The example package is designed for iterative rollout:
 - Stage B helpers are configured in `site_config.example.yaml`.
 - Stage C behavior (manual-time wake ramp) is active in `package.example.yaml`.
 - Optional sources (phone alarm, sunrise, earliest/latest) are included via `input_select.smart_wake_source`.
+- Phone alarm behavior depends on providing a valid next-alarm-like sensor in `input_text.smart_wake_phone_alarm_sensor`.
+- Sunrise behavior depends on `sun.sun`.
 
 The package intentionally does not:
 - modify integration runtime code
 - merge wake behavior into `input_boolean.circadian_rhythm`
 - force restore-to-off behavior for wake lights
+
+Light capability behavior in the example:
+- CCT-capable lights use `color_temp_kelvin` first.
+- RGB/XY fallback depends on `sensor.circadian_values` attributes being available.
+- Brightness-only lights receive brightness updates only.
 
 ## Validation (Repo-Local)
 

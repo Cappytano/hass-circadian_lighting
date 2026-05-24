@@ -5,6 +5,8 @@ Scope: upstream-conscious review of Smart Wake documentation and examples
 
 This audit classifies repository content by publication safety and privacy risk.
 
+Note: this file is fork-local process documentation and may be omitted from an upstream PR unless a maintainer requests it.
+
 ## Category Definitions
 
 1. `UPSTREAM_SAFE_CANDIDATE`

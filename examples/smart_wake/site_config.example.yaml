@@ -3,6 +3,11 @@
 #
 # Copy to site_config.local.yaml and customize for your Home Assistant instance.
 # Keep private/local values out of committed files.
+#
+# Notes:
+# - Helper initial values in this file are placeholders for demonstration.
+# - input_text CSV fields are a simple example pattern and not ideal long-term UX.
+# - Replace placeholder light and sensor entities before enabling automations.
 ###############################################################################
 
 input_boolean:
@@ -61,6 +66,7 @@ input_text:
     name: Smart Wake Target Lights CSV
     min: 0
     max: 255
+    # Comma-separated light entities; replace with your own targets.
     initial: "light.bedroom_lamp,light.kitchen_ceiling"
     icon: mdi:lightbulb-group
 
@@ -68,6 +74,7 @@ input_text:
     name: Smart Wake Phone Alarm Sensor Entity
     min: 0
     max: 255
+    # Example next-alarm-like sensor entity; replace for your environment.
     initial: "sensor.phone_next_alarm"
     icon: mdi:cellphone-clock
 
