@@ -9,6 +9,7 @@
 # - Keep wake behavior separate from input_boolean.circadian_rhythm.
 # - Do not use effect: "Circadian rhythm".
 # - Use sensor.circadian_values only as a value source for RGB/XY fallback.
+# - Target selection is preset-based via input_select.smart_wake_target_preset.
 # - CCT-capable lights are driven with color_temp_kelvin first.
 # - RGB/XY fallback requires sensor.circadian_values attributes to be available.
 # - Brightness-only lights receive brightness updates only.
@@ -56,11 +57,28 @@ script:
             {% set e = end_kelvin | float(4500) %}
             {% set p = smooth_progress | float(0) %}
             {{ (s + ((e - s) * p)) | round(0) | int }}
+          target_preset: "{{ states('input_select.smart_wake_target_preset') }}"
+          target_csv_helper_entity: >
+            {% set preset = target_preset %}
+            {% set mapping = {
+              'Bedroom': 'input_text.smart_wake_target_lights_bedroom_csv',
+              'Kitchen': 'input_text.smart_wake_target_lights_kitchen_csv',
+              'Living Room': 'input_text.smart_wake_target_lights_living_room_csv',
+              'All Wake Lights': 'input_text.smart_wake_target_lights_all_csv',
+              'Custom CSV': 'input_text.smart_wake_target_lights_custom_csv'
+            } %}
+            {{ mapping.get(preset, 'input_text.smart_wake_target_lights_custom_csv') }}
+          target_csv_raw: >
+            {% if target_csv_helper_entity.startswith('input_text.') %}
+              {{ states(target_csv_helper_entity) }}
+            {% else %}
+              {{ '' }}
+            {% endif %}
           target_lights: >
-            {% set raw = states('input_text.smart_wake_target_lights_csv') %}
+            {% set raw = target_csv_raw %}
             {% set ns = namespace(items=[]) %}
-            {% for token in raw.split(',') %}
-              {% set entity = token | trim %}
+            {% for csv_item in raw.split(',') %}
+              {% set entity = csv_item | trim %}
               {% if entity.startswith('light.') and entity not in ns.items %}
                 {% set ns.items = ns.items + [entity] %}
               {% endif %}

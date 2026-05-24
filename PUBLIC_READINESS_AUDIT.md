@@ -22,6 +22,10 @@ Note: this file is fork-local process documentation and may be omitted from an u
 | `examples/smart_wake/README.md` | `UPSTREAM_SAFE_CANDIDATE` | Generic setup guidance with placeholders and explicit privacy boundary. | Low | None. | Example docs |
 | `examples/smart_wake/site_config.example.yaml` | `UPSTREAM_SAFE_CANDIDATE` | Placeholder-only helper configuration with no site-specific values. | Low | None. | Reusable example |
 | `examples/smart_wake/package.example.yaml` | `UPSTREAM_SAFE_CANDIDATE` | Generic helper-driven wake behavior; no private infrastructure references. | Low | Optional: add version compatibility notes. | Reusable example |
+| `examples/smart_wake/dashboard-card.example.yaml` | `UPSTREAM_SAFE_CANDIDATE` | Optional generic Lovelace manual-card example for helper controls. | Low | None. | Example dashboard snippet |
+| `examples/smart_wake/TESTING.md` | `UPSTREAM_SAFE_CANDIDATE` | Generic controlled test checklist with no private deployment path assumptions. | Low | None. | Example test documentation |
+| `examples/smart_wake/scripts/install_smart_wake_test.sh` | `UPSTREAM_SAFE_CANDIDATE` | Variable-driven test installer with validation and rollback-on-failure behavior. | Low | Keep environment-variable driven; avoid site-specific defaults. | Example test helper |
+| `examples/smart_wake/scripts/rollback_smart_wake_test.sh` | `UPSTREAM_SAFE_CANDIDATE` | Variable-driven rollback helper restoring latest backup when present. | Low | Keep environment-variable driven; avoid site-specific defaults. | Example test helper |
 | `custom_components/circadian_lighting/*` | `UPSTREAM_SAFE_CANDIDATE` | Integration runtime files are unchanged in this pass and remain generic. | Low | None in this pass. | Integration code |
 | Legacy local package examples (imported context tree) | `REUSABLE_EXAMPLE_AFTER_SANITIZATION` | Useful logic patterns exist, but structure and comments still reflect migration-era local context. | Medium | Split into neutral modules, remove migration-specific narration. | Example package |
 | Legacy local template helpers (inventory tooling) | `REUSABLE_EXAMPLE_AFTER_SANITIZATION` | Template concepts are reusable but need neutral framing and caveat notes. | Low | Add generic comments and expected-output guidance. | Example tooling |
@@ -50,4 +54,5 @@ If integration changes are proposed later, keep them minimal and generic:
 
 - Wake behavior remains separate from `input_boolean.circadian_rhythm`.
 - No `effect: "Circadian rhythm"` logic is introduced.
+- Target selection UX in the example is now preset-dropdown based (`input_select`) backed by CSV helper fields.
 - Private deployment artifacts stay outside upstream PR scope.

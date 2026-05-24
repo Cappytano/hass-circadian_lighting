@@ -50,6 +50,17 @@ input_select:
     initial: "Manual Time"
     icon: mdi:alarm-check
 
+  smart_wake_target_preset:
+    name: Smart Wake Target Preset
+    options:
+      - "Bedroom"
+      - "Kitchen"
+      - "Living Room"
+      - "All Wake Lights"
+      - "Custom CSV"
+    initial: "Bedroom"
+    icon: mdi:format-list-bulleted-square
+
 input_datetime:
   smart_wake_manual_time:
     name: Smart Wake Manual Time
@@ -62,13 +73,46 @@ input_datetime:
     has_time: true
 
 input_text:
-  smart_wake_target_lights_csv:
-    name: Smart Wake Target Lights CSV
+  smart_wake_target_lights_bedroom_csv:
+    name: Smart Wake Target Bedroom CSV
     min: 0
     max: 255
-    # Comma-separated light entities; replace with your own targets.
-    initial: "light.bedroom_lamp,light.kitchen_ceiling"
+    # Placeholder entities only. Replace with your own bedroom wake targets.
+    initial: "light.bedroom_lamp"
+    icon: mdi:bed
+
+  smart_wake_target_lights_kitchen_csv:
+    name: Smart Wake Target Kitchen CSV
+    min: 0
+    max: 255
+    # Placeholder entities only. Replace with your own kitchen wake targets.
+    initial: "light.kitchen_ceiling"
+    icon: mdi:countertop
+
+  smart_wake_target_lights_living_room_csv:
+    name: Smart Wake Target Living Room CSV
+    min: 0
+    max: 255
+    # Placeholder entities only. Replace with your own living room wake targets.
+    initial: "light.living_room_lamp"
+    icon: mdi:sofa
+
+  smart_wake_target_lights_all_csv:
+    name: Smart Wake Target All Lights CSV
+    min: 0
+    max: 255
+    # Placeholder entities only. Replace with your own full wake target list.
+    initial: "light.bedroom_lamp,light.kitchen_ceiling,light.living_room_lamp"
     icon: mdi:lightbulb-group
+
+  smart_wake_target_lights_custom_csv:
+    name: Smart Wake Target Custom CSV
+    min: 0
+    max: 255
+    # CSV helpers are a simple backend representation in this YAML-only example.
+    # They are convenient for templating but not ideal long-term UX.
+    initial: "light.bedroom_lamp"
+    icon: mdi:tune
 
   smart_wake_phone_alarm_sensor:
     name: Smart Wake Phone Alarm Sensor Entity

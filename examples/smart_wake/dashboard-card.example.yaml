@@ -1,0 +1,85 @@
+type: vertical-stack
+cards:
+  - type: markdown
+    content: |
+      ## Smart Wake (Example)
+      Generic helper-driven wake controls. Replace placeholder CSV entities before enabling.
+
+  - type: grid
+    title: Main Controls
+    columns: 2
+    square: false
+    cards:
+      - type: tile
+        entity: input_boolean.smart_wake_enabled
+        name: Smart Wake Enabled
+        icon: mdi:alarm-light
+        tap_action:
+          action: toggle
+      - type: tile
+        entity: automation.smart_wake_ramp_tick_example
+        name: Ramp Automation
+        icon: mdi:refresh-auto
+        tap_action:
+          action: toggle
+
+  - type: entities
+    title: Wake Source and Target
+    show_header_toggle: false
+    entities:
+      - entity: input_select.smart_wake_target_preset
+        name: Target Preset
+      - entity: input_select.smart_wake_source
+        name: Wake Source
+      - entity: input_datetime.smart_wake_manual_time
+        name: Manual Wake Time
+      - entity: input_text.smart_wake_phone_alarm_sensor
+        name: Phone Alarm Sensor Entity
+
+  - type: entities
+    title: Wake Days
+    show_header_toggle: false
+    entities:
+      - entity: input_boolean.smart_wake_monday
+      - entity: input_boolean.smart_wake_tuesday
+      - entity: input_boolean.smart_wake_wednesday
+      - entity: input_boolean.smart_wake_thursday
+      - entity: input_boolean.smart_wake_friday
+      - entity: input_boolean.smart_wake_saturday
+      - entity: input_boolean.smart_wake_sunday
+
+  - type: entities
+    title: Ramp Settings
+    show_header_toggle: false
+    entities:
+      - entity: input_number.smart_wake_ramp_duration_minutes
+        name: Ramp Duration
+      - entity: input_number.smart_wake_update_interval_seconds
+        name: Update Interval
+      - entity: input_number.smart_wake_transition_seconds
+        name: Transition Seconds
+      - entity: input_number.smart_wake_start_brightness_pct
+        name: Start Brightness
+      - entity: input_number.smart_wake_end_brightness_pct
+        name: End Brightness
+      - entity: input_number.smart_wake_start_kelvin
+        name: Start Kelvin
+      - entity: input_number.smart_wake_end_kelvin
+        name: End Kelvin
+      - entity: input_datetime.smart_wake_last_run
+        name: Last Run
+
+  - type: entities
+    title: Advanced Target CSV Helpers
+    show_header_toggle: false
+    entities:
+      - entity: input_text.smart_wake_target_lights_bedroom_csv
+        name: Bedroom Target CSV
+      - entity: input_text.smart_wake_target_lights_kitchen_csv
+        name: Kitchen Target CSV
+      - entity: input_text.smart_wake_target_lights_living_room_csv
+        name: Living Room Target CSV
+      - entity: input_text.smart_wake_target_lights_all_csv
+        name: All Wake Lights CSV
+      - entity: input_text.smart_wake_target_lights_custom_csv
+        name: Custom Target CSV
