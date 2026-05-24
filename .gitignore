@@ -1,2 +1,9 @@
-__pycache__/
+﻿__pycache__/
 .DS_Store
+
+# Local/private Home Assistant overlays and diagnostics
+*.local.yaml
+local_config/
+private/
+_local/
+diagnostic_logs/

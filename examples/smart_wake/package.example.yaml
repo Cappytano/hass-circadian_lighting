@@ -1,0 +1,251 @@
+###############################################################################
+# Smart Wake package example
+#
+# Requires helper entities from site_config.example.yaml.
+# This example is intentionally generic and contains no private deployment data.
+#
+# Key rules:
+# - Keep wake behavior separate from input_boolean.circadian_rhythm.
+# - Do not use effect: "Circadian rhythm".
+# - Use sensor.circadian_values only as a value source for RGB/XY fallback.
+###############################################################################
+
+script:
+  smart_wake_apply_ramp_step:
+    alias: Smart Wake - Apply Ramp Step
+    mode: parallel
+    fields:
+      wake_target_ts:
+        description: Unix timestamp for wake completion.
+        example: 1767222000
+      ramp_start_ts:
+        description: Unix timestamp for wake ramp start.
+        example: 1767220200
+    sequence:
+      - variables:
+          now_ts: "{{ as_timestamp(now()) | float(0) }}"
+          wake_end_ts: "{{ wake_target_ts | float(0) }}"
+          wake_begin_ts: "{{ ramp_start_ts | float(0) }}"
+          ramp_span_seconds: >
+            {% set span = (wake_end_ts | float(0)) - (wake_begin_ts | float(0)) %}
+            {{ span if span > 0 else 1 }}
+          raw_progress: >
+            {{ ((now_ts | float(0)) - (wake_begin_ts | float(0))) / (ramp_span_seconds | float(1)) }}
+          progress: >
+            {% set p = raw_progress | float(0) %}
+            {{ 0 if p < 0 else 1 if p > 1 else p }}
+          smooth_progress: >
+            {% set p = progress | float(0) %}
+            {{ (p * p * (3 - 2 * p)) }}
+          start_brightness: "{{ states('input_number.smart_wake_start_brightness_pct') | float(1) }}"
+          end_brightness: "{{ states('input_number.smart_wake_end_brightness_pct') | float(70) }}"
+          start_kelvin: "{{ states('input_number.smart_wake_start_kelvin') | float(2000) }}"
+          end_kelvin: "{{ states('input_number.smart_wake_end_kelvin') | float(4500) }}"
+          transition_seconds: "{{ states('input_number.smart_wake_transition_seconds') | float(1) }}"
+          target_brightness_pct: >
+            {% set s = start_brightness | float(1) %}
+            {% set e = end_brightness | float(70) %}
+            {% set p = smooth_progress | float(0) %}
+            {{ (s + ((e - s) * p)) | round(0) | int }}
+          target_kelvin: >
+            {% set s = start_kelvin | float(2000) %}
+            {% set e = end_kelvin | float(4500) %}
+            {% set p = smooth_progress | float(0) %}
+            {{ (s + ((e - s) * p)) | round(0) | int }}
+          target_lights: >
+            {% set raw = states('input_text.smart_wake_target_lights_csv') %}
+            {% set ns = namespace(items=[]) %}
+            {% for token in raw.split(',') %}
+              {% set entity = token | trim %}
+              {% if entity.startswith('light.') and entity not in ns.items %}
+                {% set ns.items = ns.items + [entity] %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.items }}
+          circadian_rgb: "{{ state_attr('sensor.circadian_values', 'rgb_color') }}"
+          circadian_xy: "{{ state_attr('sensor.circadian_values', 'xy_color') }}"
+
+      - repeat:
+          for_each: "{{ target_lights }}"
+          sequence:
+            - condition: template
+              value_template: "{{ states(repeat.item) not in ['unknown', 'unavailable'] }}"
+
+            - variables:
+                supported_modes: "{{ state_attr(repeat.item, 'supported_color_modes') or [] }}"
+                has_color_temp: "{{ 'color_temp' in supported_modes }}"
+                has_xy: "{{ 'xy' in supported_modes }}"
+                has_rgb: >
+                  {{ 'hs' in supported_modes or 'rgb' in supported_modes or 'rgbw' in supported_modes or 'rgbww' in supported_modes }}
+
+            - choose:
+                - conditions:
+                    - condition: template
+                      value_template: "{{ has_color_temp }}"
+                  sequence:
+                    - action: light.turn_on
+                      target:
+                        entity_id: "{{ repeat.item }}"
+                      data:
+                        brightness_pct: "{{ target_brightness_pct | int }}"
+                        color_temp_kelvin: "{{ target_kelvin | int }}"
+                        transition: "{{ transition_seconds | float }}"
+                      continue_on_error: true
+
+                - conditions:
+                    - condition: template
+                      value_template: "{{ has_xy and (circadian_xy is iterable) and (circadian_xy | count >= 2) }}"
+                  sequence:
+                    - action: light.turn_on
+                      target:
+                        entity_id: "{{ repeat.item }}"
+                      data:
+                        brightness_pct: "{{ target_brightness_pct | int }}"
+                        xy_color:
+                          - "{{ circadian_xy[0] | float }}"
+                          - "{{ circadian_xy[1] | float }}"
+                        transition: "{{ transition_seconds | float }}"
+                      continue_on_error: true
+
+                - conditions:
+                    - condition: template
+                      value_template: "{{ has_rgb and (circadian_rgb is iterable) and (circadian_rgb | count >= 3) }}"
+                  sequence:
+                    - action: light.turn_on
+                      target:
+                        entity_id: "{{ repeat.item }}"
+                      data:
+                        brightness_pct: "{{ target_brightness_pct | int }}"
+                        rgb_color:
+                          - "{{ circadian_rgb[0] | int }}"
+                          - "{{ circadian_rgb[1] | int }}"
+                          - "{{ circadian_rgb[2] | int }}"
+                        transition: "{{ transition_seconds | float }}"
+                      continue_on_error: true
+
+              default:
+                - action: light.turn_on
+                  target:
+                    entity_id: "{{ repeat.item }}"
+                  data:
+                    brightness_pct: "{{ target_brightness_pct | int }}"
+                    transition: "{{ transition_seconds | float }}"
+                  continue_on_error: true
+
+automation:
+  - id: smart_wake_ramp_tick_example
+    alias: Smart Wake - Ramp Tick (Example)
+    mode: single
+    trigger:
+      - platform: time_pattern
+        seconds: "/15"
+    condition:
+      - condition: state
+        entity_id: input_boolean.smart_wake_enabled
+        state: "on"
+      - condition: template
+        value_template: >
+          {% set weekday = now().strftime('%A').lower() %}
+          {% set day_map = {
+            'monday': is_state('input_boolean.smart_wake_monday', 'on'),
+            'tuesday': is_state('input_boolean.smart_wake_tuesday', 'on'),
+            'wednesday': is_state('input_boolean.smart_wake_wednesday', 'on'),
+            'thursday': is_state('input_boolean.smart_wake_thursday', 'on'),
+            'friday': is_state('input_boolean.smart_wake_friday', 'on'),
+            'saturday': is_state('input_boolean.smart_wake_saturday', 'on'),
+            'sunday': is_state('input_boolean.smart_wake_sunday', 'on')
+          } %}
+          {{ day_map.get(weekday, false) }}
+      - condition: template
+        value_template: >
+          {% set now_ts = as_timestamp(now()) %}
+          {% set interval = states('input_number.smart_wake_update_interval_seconds') | int(30) %}
+          {% set last_raw = states('input_datetime.smart_wake_last_run') %}
+          {% set last_ts = as_timestamp(last_raw, 0) if last_raw not in ['unknown', 'unavailable', 'none', 'None', ''] else 0 %}
+          {{ last_ts == 0 or (now_ts - last_ts) >= interval }}
+    action:
+      - variables:
+          wake_source: "{{ states('input_select.smart_wake_source') }}"
+          manual_alarm_ts: >
+            {% set raw = states('input_datetime.smart_wake_manual_time') %}
+            {% if raw in ['unknown', 'unavailable', 'none', 'None', ''] %}
+              0
+            {% else %}
+              {% set today = now().strftime('%Y-%m-%d') %}
+              {% set candidate = as_timestamp(today ~ ' ' ~ raw, 0) %}
+              {% if candidate <= as_timestamp(now()) %}
+                {{ candidate + 86400 }}
+              {% else %}
+                {{ candidate }}
+              {% endif %}
+            {% endif %}
+          phone_alarm_entity: "{{ states('input_text.smart_wake_phone_alarm_sensor') | trim }}"
+          phone_alarm_raw: >
+            {% if phone_alarm_entity.startswith('sensor.') %}
+              {{ states(phone_alarm_entity) }}
+            {% else %}
+              unknown
+            {% endif %}
+          phone_alarm_ts: >
+            {% set raw = phone_alarm_raw | trim %}
+            {% if raw in ['unknown', 'unavailable', 'none', 'None', ''] %}
+              0
+            {% else %}
+              {{ as_timestamp(raw, 0) }}
+            {% endif %}
+          sunrise_alarm_ts: "{{ as_timestamp(state_attr('sun.sun', 'next_rising'), 0) }}"
+          wake_target_ts: >
+            {% set source = wake_source %}
+            {% set manual_ts = manual_alarm_ts | float(0) %}
+            {% set phone_ts = phone_alarm_ts | float(0) %}
+            {% set sunrise_ts = sunrise_alarm_ts | float(0) %}
+            {% if source == 'Manual Time' %}
+              {{ manual_ts }}
+            {% elif source == 'Phone Alarm' %}
+              {{ phone_ts }}
+            {% elif source == 'Sunrise' %}
+              {{ sunrise_ts }}
+            {% elif source == 'Earliest of Sunrise or Phone Alarm' %}
+              {% if phone_ts > 0 and sunrise_ts > 0 %}
+                {{ [phone_ts, sunrise_ts] | min }}
+              {% elif phone_ts > 0 %}
+                {{ phone_ts }}
+              {% elif sunrise_ts > 0 %}
+                {{ sunrise_ts }}
+              {% else %}
+                0
+              {% endif %}
+            {% elif source == 'Latest of Sunrise or Phone Alarm' %}
+              {% if phone_ts > 0 and sunrise_ts > 0 %}
+                {{ [phone_ts, sunrise_ts] | max }}
+              {% elif phone_ts > 0 %}
+                {{ phone_ts }}
+              {% elif sunrise_ts > 0 %}
+                {{ sunrise_ts }}
+              {% else %}
+                0
+              {% endif %}
+            {% else %}
+              0
+            {% endif %}
+          ramp_start_ts: >
+            {{ (wake_target_ts | float(0)) - ((states('input_number.smart_wake_ramp_duration_minutes') | float(30)) * 60) }}
+
+      - condition: template
+        value_template: >
+          {% set now_ts = as_timestamp(now()) %}
+          {% set start_ts = ramp_start_ts | float(0) %}
+          {% set end_ts = wake_target_ts | float(0) %}
+          {% set grace = states('input_number.smart_wake_update_interval_seconds') | int(30) %}
+          {{ end_ts > 0 and now_ts >= start_ts and now_ts <= (end_ts + grace) }}
+
+      - action: script.smart_wake_apply_ramp_step
+        data:
+          wake_target_ts: "{{ wake_target_ts | float(0) }}"
+          ramp_start_ts: "{{ ramp_start_ts | float(0) }}"
+
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.smart_wake_last_run
+        data:
+          datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"

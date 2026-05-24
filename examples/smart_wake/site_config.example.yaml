@@ -1,0 +1,136 @@
+###############################################################################
+# Smart Wake site configuration example
+#
+# Copy to site_config.local.yaml and customize for your Home Assistant instance.
+# Keep private/local values out of committed files.
+###############################################################################
+
+input_boolean:
+  smart_wake_enabled:
+    name: Smart Wake Enabled
+    initial: false
+    icon: mdi:alarm-light
+
+  smart_wake_monday:
+    name: Smart Wake Monday
+    initial: true
+  smart_wake_tuesday:
+    name: Smart Wake Tuesday
+    initial: true
+  smart_wake_wednesday:
+    name: Smart Wake Wednesday
+    initial: true
+  smart_wake_thursday:
+    name: Smart Wake Thursday
+    initial: true
+  smart_wake_friday:
+    name: Smart Wake Friday
+    initial: true
+  smart_wake_saturday:
+    name: Smart Wake Saturday
+    initial: false
+  smart_wake_sunday:
+    name: Smart Wake Sunday
+    initial: false
+
+input_select:
+  smart_wake_source:
+    name: Smart Wake Source
+    options:
+      - "Manual Time"
+      - "Phone Alarm"
+      - "Sunrise"
+      - "Earliest of Sunrise or Phone Alarm"
+      - "Latest of Sunrise or Phone Alarm"
+    initial: "Manual Time"
+    icon: mdi:alarm-check
+
+input_datetime:
+  smart_wake_manual_time:
+    name: Smart Wake Manual Time
+    has_date: false
+    has_time: true
+
+  smart_wake_last_run:
+    name: Smart Wake Last Run
+    has_date: true
+    has_time: true
+
+input_text:
+  smart_wake_target_lights_csv:
+    name: Smart Wake Target Lights CSV
+    min: 0
+    max: 255
+    initial: "light.bedroom_lamp,light.kitchen_ceiling"
+    icon: mdi:lightbulb-group
+
+  smart_wake_phone_alarm_sensor:
+    name: Smart Wake Phone Alarm Sensor Entity
+    min: 0
+    max: 255
+    initial: "sensor.phone_next_alarm"
+    icon: mdi:cellphone-clock
+
+input_number:
+  smart_wake_ramp_duration_minutes:
+    name: Smart Wake Ramp Duration
+    min: 5
+    max: 120
+    step: 5
+    initial: 30
+    mode: slider
+    unit_of_measurement: min
+
+  smart_wake_update_interval_seconds:
+    name: Smart Wake Update Interval
+    min: 10
+    max: 120
+    step: 5
+    initial: 30
+    mode: slider
+    unit_of_measurement: s
+
+  smart_wake_transition_seconds:
+    name: Smart Wake Transition
+    min: 0
+    max: 30
+    step: 1
+    initial: 1
+    mode: slider
+    unit_of_measurement: s
+
+  smart_wake_start_brightness_pct:
+    name: Smart Wake Start Brightness
+    min: 1
+    max: 50
+    step: 1
+    initial: 1
+    mode: slider
+    unit_of_measurement: "%"
+
+  smart_wake_end_brightness_pct:
+    name: Smart Wake End Brightness
+    min: 5
+    max: 100
+    step: 1
+    initial: 70
+    mode: slider
+    unit_of_measurement: "%"
+
+  smart_wake_start_kelvin:
+    name: Smart Wake Start Kelvin
+    min: 1500
+    max: 3500
+    step: 50
+    initial: 2000
+    mode: slider
+    unit_of_measurement: K
+
+  smart_wake_end_kelvin:
+    name: Smart Wake End Kelvin
+    min: 2500
+    max: 6500
+    step: 50
+    initial: 4500
+    mode: slider
+    unit_of_measurement: K
