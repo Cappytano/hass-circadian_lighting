@@ -1,12 +1,15 @@
-type: vertical-stack
+﻿type: vertical-stack
 cards:
   - type: markdown
     content: |
-      ## Smart Wake (Example)
-      Generic helper-driven wake controls. Replace placeholder CSV entities before enabling.
+      ## Smart Wake
+
+      Select a wake room / target area, then edit only the revealed target list for that area.
+
+      For first live testing, choose **Custom**, put exactly one safe `light.` entity in the Custom target list, choose **Manual Time**, and set the wake time a few minutes ahead.
 
   - type: grid
-    title: Main Controls
+    title: Smart Wake Main Controls
     columns: 2
     square: false
     cards:
@@ -16,6 +19,7 @@ cards:
         icon: mdi:alarm-light
         tap_action:
           action: toggle
+
       - type: tile
         entity: automation.smart_wake_ramp_tick_example
         name: Ramp Automation
@@ -28,25 +32,108 @@ cards:
     show_header_toggle: false
     entities:
       - entity: input_select.smart_wake_target_preset
-        name: Target Preset
+        name: Wake Room / Target Area
+
       - entity: input_select.smart_wake_source
         name: Wake Source
+
       - entity: input_datetime.smart_wake_manual_time
         name: Manual Wake Time
+
       - entity: input_text.smart_wake_phone_alarm_sensor
         name: Phone Alarm Sensor Entity
+
+  - type: conditional
+    conditions:
+      - entity: input_select.smart_wake_target_preset
+        state: "Bedroom"
+    card:
+      type: entities
+      title: Bedroom Wake Targets
+      show_header_toggle: false
+      entities:
+        - entity: input_text.smart_wake_target_lights_bedroom_csv
+          name: Bedroom target lights
+
+  - type: conditional
+    conditions:
+      - entity: input_select.smart_wake_target_preset
+        state: "Kitchen"
+    card:
+      type: entities
+      title: Kitchen Wake Targets
+      show_header_toggle: false
+      entities:
+        - entity: input_text.smart_wake_target_lights_kitchen_csv
+          name: Kitchen target lights
+
+  - type: conditional
+    conditions:
+      - entity: input_select.smart_wake_target_preset
+        state: "Living Room"
+    card:
+      type: entities
+      title: Living Room Wake Targets
+      show_header_toggle: false
+      entities:
+        - entity: input_text.smart_wake_target_lights_living_room_csv
+          name: Living Room target lights
+
+  - type: conditional
+    conditions:
+      - entity: input_select.smart_wake_target_preset
+        state: "All Wake Lights"
+    card:
+      type: entities
+      title: All Wake Lights Targets
+      show_header_toggle: false
+      entities:
+        - entity: input_text.smart_wake_target_lights_all_csv
+          name: All wake target lights
+
+  - type: conditional
+    conditions:
+      - entity: input_select.smart_wake_target_preset
+        state: "Custom"
+    card:
+      type: entities
+      title: Custom Wake Targets
+      show_header_toggle: false
+      entities:
+        - entity: input_text.smart_wake_target_lights_custom_csv
+          name: Custom target lights
+
+  # Backward-compatible only for older test installs that still have "Custom CSV".
+  - type: conditional
+    conditions:
+      - entity: input_select.smart_wake_target_preset
+        state: "Custom CSV"
+    card:
+      type: entities
+      title: Custom Wake Targets
+      show_header_toggle: false
+      entities:
+        - entity: input_text.smart_wake_target_lights_custom_csv
+          name: Custom target lights
 
   - type: entities
     title: Wake Days
     show_header_toggle: false
     entities:
       - entity: input_boolean.smart_wake_monday
+        name: Monday
       - entity: input_boolean.smart_wake_tuesday
+        name: Tuesday
       - entity: input_boolean.smart_wake_wednesday
+        name: Wednesday
       - entity: input_boolean.smart_wake_thursday
+        name: Thursday
       - entity: input_boolean.smart_wake_friday
+        name: Friday
       - entity: input_boolean.smart_wake_saturday
+        name: Saturday
       - entity: input_boolean.smart_wake_sunday
+        name: Sunday
 
   - type: entities
     title: Ramp Settings
@@ -54,32 +141,36 @@ cards:
     entities:
       - entity: input_number.smart_wake_ramp_duration_minutes
         name: Ramp Duration
+
       - entity: input_number.smart_wake_update_interval_seconds
         name: Update Interval
+
       - entity: input_number.smart_wake_transition_seconds
         name: Transition Seconds
+
       - entity: input_number.smart_wake_start_brightness_pct
         name: Start Brightness
+
       - entity: input_number.smart_wake_end_brightness_pct
         name: End Brightness
+
       - entity: input_number.smart_wake_start_kelvin
         name: Start Kelvin
+
       - entity: input_number.smart_wake_end_kelvin
         name: End Kelvin
+
       - entity: input_datetime.smart_wake_last_run
         name: Last Run
 
-  - type: entities
-    title: Advanced Target CSV Helpers
-    show_header_toggle: false
-    entities:
-      - entity: input_text.smart_wake_target_lights_bedroom_csv
-        name: Bedroom Target CSV
-      - entity: input_text.smart_wake_target_lights_kitchen_csv
-        name: Kitchen Target CSV
-      - entity: input_text.smart_wake_target_lights_living_room_csv
-        name: Living Room Target CSV
-      - entity: input_text.smart_wake_target_lights_all_csv
-        name: All Wake Lights CSV
-      - entity: input_text.smart_wake_target_lights_custom_csv
-        name: Custom Target CSV
+  - type: markdown
+    content: |
+      ### First live-test checklist
+
+      1. Keep **Smart Wake Enabled** off while editing.
+      2. Select **Custom** as the Wake Room / Target Area.
+      3. Put exactly one safe light entity in the Custom target list.
+      4. Select **Manual Time**.
+      5. Set Manual Wake Time a few minutes ahead.
+      6. Enable Smart Wake only for the test window.
+      7. Disable Smart Wake after the test.

@@ -1,4 +1,4 @@
-# Smart Wake Test Checklist (Controlled Live Test)
+﻿# Smart Wake Test Checklist (Controlled Live Test)
 
 This guide is for a cautious first live test of the Smart Wake example package.
 
@@ -6,7 +6,7 @@ This guide is for a cautious first live test of the Smart Wake example package.
 
 - Do not test all lights first.
 - Start with `Manual Time` source only.
-- Start with `Custom CSV` target preset only.
+- Start with `Custom` target area only.
 - Put exactly one known safe light into `input_text.smart_wake_target_lights_custom_csv`.
 - Keep ramp duration short (for example, 5 minutes).
 
@@ -17,7 +17,7 @@ This guide is for a cautious first live test of the Smart Wake example package.
 3. Verify `input_boolean.smart_wake_enabled` is `off` before setup.
 4. Set:
    - `input_select.smart_wake_source` = `Manual Time`
-   - `input_select.smart_wake_target_preset` = `Custom CSV`
+   - `input_select.smart_wake_target_preset` = `Custom`
    - `input_text.smart_wake_target_lights_custom_csv` = one safe light entity
    - `input_number.smart_wake_ramp_duration_minutes` = `5`
 5. Set manual wake time a few minutes ahead.
@@ -30,7 +30,7 @@ Do not move to phone alarm or sunrise modes until Manual Time works cleanly.
 ## Verification Checklist
 
 - Helpers exist and are editable.
-- Target preset dropdown changes which CSV helper is used.
+- Target area dropdown reveals only the matching target helper in the dashboard.
 - Manual card renders if you pasted the dashboard snippet.
 - No Smart Wake template/config errors appear in logs.
 
@@ -44,3 +44,4 @@ docker logs --since=10m "$HA_CONTAINER" 2>&1 | grep -Ei "smart_wake|Smart Wake|T
 ## Rollback
 
 Use `scripts/rollback_smart_wake_test.sh` if you want to remove the test package/snippet files and restore the latest backup.
+

@@ -1,4 +1,4 @@
-###############################################################################
+﻿###############################################################################
 # Smart Wake site configuration example
 #
 # Copy to site_config.local.yaml and customize for your Home Assistant instance.
@@ -51,15 +51,15 @@ input_select:
     icon: mdi:alarm-check
 
   smart_wake_target_preset:
-    name: Smart Wake Target Preset
+    name: Smart Wake Room / Target Area
     options:
       - "Bedroom"
       - "Kitchen"
       - "Living Room"
       - "All Wake Lights"
-      - "Custom CSV"
-    initial: "Bedroom"
-    icon: mdi:format-list-bulleted-square
+      - "Custom"
+    initial: "Custom"
+    icon: mdi:home-lightbulb-outline
 
 input_datetime:
   smart_wake_manual_time:
@@ -106,12 +106,12 @@ input_text:
     icon: mdi:lightbulb-group
 
   smart_wake_target_lights_custom_csv:
-    name: Smart Wake Target Custom CSV
+    name: Smart Wake Target Custom
     min: 0
     max: 255
-    # CSV helpers are a simple backend representation in this YAML-only example.
-    # They are convenient for templating but not ideal long-term UX.
-    initial: "light.bedroom_lamp"
+    # Backend storage for the Custom wake target list.
+    # Put one or more comma-separated light entity IDs here.
+    initial: "light.replace_me_safe_test_light"
     icon: mdi:tune
 
   smart_wake_phone_alarm_sensor:
@@ -185,3 +185,4 @@ input_number:
     initial: 4500
     mode: slider
     unit_of_measurement: K
+

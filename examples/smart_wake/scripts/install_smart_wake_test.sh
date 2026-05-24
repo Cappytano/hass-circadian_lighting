@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 set -euo pipefail
 
 if [[ -z "${HA_CONFIG_DIR:-}" ]]; then
@@ -100,9 +100,10 @@ Backup dir:
 
 Next manual test steps:
   1) In Home Assistant, ensure helpers from smart_wake_site_config_test.yaml are present.
-  2) Set target preset to "Custom CSV".
+  2) Set Wake Room / Target Area to "Custom".
   3) Put exactly one safe light in input_text.smart_wake_target_lights_custom_csv.
   4) Set source to Manual Time and set wake time a few minutes ahead.
   5) Enable input_boolean.smart_wake_enabled for the test window.
   6) Disable input_boolean.smart_wake_enabled after testing.
 EOF
+

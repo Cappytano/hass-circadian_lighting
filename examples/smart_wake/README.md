@@ -1,4 +1,4 @@
-# Smart Wake Example (Upstream-Safe)
+﻿# Smart Wake Example (Upstream-Safe)
 
 This folder contains reusable Home Assistant example artifacts for Smart Wake / Sunrise Alarm lighting.
 
@@ -80,10 +80,10 @@ The example package is designed for iterative rollout:
 - Stage B helpers are configured in `site_config.example.yaml`.
 - Stage C behavior (manual-time wake ramp) is active in `package.example.yaml`.
 - Optional sources (phone alarm, sunrise, earliest/latest) are included via `input_select.smart_wake_source`.
-- Wake target selection is preset-based via `input_select.smart_wake_target_preset`.
+- Wake target selection is room/area-based via `input_select.smart_wake_target_preset`.
 - Home Assistant native helpers do not provide a dynamic multi-select light picker in this YAML-only pattern.
-- Each preset maps to a dedicated CSV helper (`input_text.smart_wake_target_lights_*_csv`).
-- Users should edit those preset CSV helper values to match their own light entities.
+- Each room/area maps to a dedicated backend target helper (`input_text.smart_wake_target_lights_*_csv`).
+- Users should edit the revealed target helper for the selected room/area to match their own light entities.
 - Phone alarm behavior depends on providing a valid next-alarm-like sensor in `input_text.smart_wake_phone_alarm_sensor`.
 - Sunrise behavior depends on `sun.sun`.
 
@@ -132,10 +132,11 @@ HA_CONFIG_DIR=/path/to/ha_config HA_CONTAINER=homeassistant bash examples/smart_
 HA_CONFIG_DIR=/path/to/ha_config HA_CONTAINER=homeassistant bash examples/smart_wake/scripts/rollback_smart_wake_test.sh
 ```
 
-For the first live test, use target preset `Custom CSV` and set exactly one safe light in `input_text.smart_wake_target_lights_custom_csv`.
+For the first live test, use target area `Custom` and set exactly one safe light in `input_text.smart_wake_target_lights_custom_csv`.
 
 ## Public Fork vs Upstream PR
 
 - `PUBLIC_READINESS_AUDIT.md` is useful in a fork as a contribution/privacy checklist.
 - A likely upstream PR scope is `examples/smart_wake/*`, and optionally `.gitignore` if maintainers want those rules.
 - `PUBLIC_READINESS_AUDIT.md` can be omitted from an upstream PR unless a maintainer explicitly requests it.
+

@@ -1,4 +1,4 @@
-###############################################################################
+﻿###############################################################################
 # Smart Wake package example
 #
 # Requires helper entities from site_config.example.yaml.
@@ -65,6 +65,7 @@ script:
               'Kitchen': 'input_text.smart_wake_target_lights_kitchen_csv',
               'Living Room': 'input_text.smart_wake_target_lights_living_room_csv',
               'All Wake Lights': 'input_text.smart_wake_target_lights_all_csv',
+              'Custom': 'input_text.smart_wake_target_lights_custom_csv',
               'Custom CSV': 'input_text.smart_wake_target_lights_custom_csv'
             } %}
             {{ mapping.get(preset, 'input_text.smart_wake_target_lights_custom_csv') }}
@@ -271,3 +272,4 @@ automation:
           entity_id: input_datetime.smart_wake_last_run
         data:
           datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+
