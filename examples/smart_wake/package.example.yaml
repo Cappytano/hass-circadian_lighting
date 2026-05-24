@@ -2,12 +2,16 @@
 # Smart Wake package example
 #
 # Requires helper entities from site_config.example.yaml.
+# Equivalent helper entities can be used if names are updated consistently.
 # This example is intentionally generic and contains no private deployment data.
 #
 # Key rules:
 # - Keep wake behavior separate from input_boolean.circadian_rhythm.
 # - Do not use effect: "Circadian rhythm".
 # - Use sensor.circadian_values only as a value source for RGB/XY fallback.
+# - CCT-capable lights are driven with color_temp_kelvin first.
+# - RGB/XY fallback requires sensor.circadian_values attributes to be available.
+# - Brightness-only lights receive brightness updates only.
 ###############################################################################
 
 script:

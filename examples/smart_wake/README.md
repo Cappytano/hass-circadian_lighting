@@ -12,10 +12,25 @@ Design goals:
 
 - `site_config.example.yaml`
   - Helper entities and user-tunable settings.
-  - Copy to a local override file before editing values.
 - `package.example.yaml`
   - Example automation and script behavior for staged wake ramp logic.
   - Uses only helper-driven configuration.
+
+## Install and Use (Example Workflow)
+
+These are example artifacts, not auto-loaded by Home Assistant from this repository path.
+
+1. Copy `site_config.example.yaml` and `package.example.yaml` into your own Home Assistant config layout.
+2. Include them in your Home Assistant configuration using your package/include approach.
+3. Replace placeholder entities before enabling behavior (lights, phone alarm sensor, wake settings).
+4. Run configuration validation before enabling the automations/scripts.
+
+Suggested local/private override naming:
+- `site_config.local.yaml`
+
+Important:
+- Home Assistant only loads files that you explicitly include in your configuration.
+- A `.local.yaml` file name is just a convention until you wire it into your include setup.
 
 ## Public/Private Boundary
 
@@ -63,8 +78,14 @@ git diff --check
 Home Assistant validation should be run in your own environment:
 
 - Home Assistant UI path: `Developer Tools -> YAML -> Check configuration` (wording may vary by release).
-- Container example (adjust config path for your setup):
+- Container CLI example (adjust config path for your setup):
 
 ```bash
 python -m homeassistant --script check_config --config /config
 ```
+
+## Public Fork vs Upstream PR
+
+- `PUBLIC_READINESS_AUDIT.md` is useful in a fork as a contribution/privacy checklist.
+- A likely upstream PR scope is `examples/smart_wake/*`, and optionally `.gitignore` if maintainers want those rules.
+- `PUBLIC_READINESS_AUDIT.md` can be omitted from an upstream PR unless a maintainer explicitly requests it.
